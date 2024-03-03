@@ -6,7 +6,6 @@ namespace HR.LeaveManagement.Application.Features.LeaveType.Queries.GetAllLeaveT
 
 public class LeaveTypesQueryHandler : IRequestHandler<LeaveTypesQuery, IEnumerable<LeaveTypeDTO>>
 {
-
     private readonly IMapper _mapper;
     public readonly ILeaveTypeRepository _leaveRepo;
     public LeaveTypesQueryHandler(IMapper mapper, ILeaveTypeRepository leaveRepo)

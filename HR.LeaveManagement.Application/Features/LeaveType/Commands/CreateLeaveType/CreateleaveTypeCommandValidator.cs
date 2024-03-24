@@ -18,9 +18,9 @@ public class CreateleaveTypeCommandValidator : AbstractValidator<CreateLeaveType
 
         RuleFor(lt => lt.DefaultDays)
             .LessThanOrEqualTo(20)
-            .WithMessage($"Property default days cannot exceed 20.")
+                .WithMessage($"Property default days cannot exceed 20.")
             .GreaterThanOrEqualTo(1)
-            .WithMessage($"Property default days cannot be smaller than 1.");
+                .WithMessage($"Property default days cannot be smaller than 1.");
 
         RuleFor(lt => lt)
             .MustAsync(UniqueNameCheck)

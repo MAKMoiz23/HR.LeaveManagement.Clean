@@ -1,9 +1,10 @@
 ﻿using HR.LeaveManagement.Application.Contracts.Persistence;
+using HR.LeaveManagement.Domain.Common;
 using HR.LeaveManagement.Persistence.DatabaseContexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace HR.LeaveManagement.Persistence.Repositories;
-internal class GenericRepository<T> : IGenericRepository<T> where T : class
+public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
 {
     public readonly HRDatabaseContext _context;
 
@@ -26,12 +27,16 @@ internal class GenericRepository<T> : IGenericRepository<T> where T : class
 
     public async Task<IEnumerable<T>> GetAll(CancellationToken cancellationToken)
     {
-        return await _context.Set<T>().ToListAsync(cancellationToken);
+        return await _context.Set<T>()
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<T> GetById(int id, CancellationToken cancellationToken)
+    public async Task<T?> GetById(int id, CancellationToken cancellationToken)
     {
-        return await _context.Set<T>().FindAsync(id);
+        return await _context.Set<T>()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
     }
 
     public async Task Update(T entity, CancellationToken cancellationToken)

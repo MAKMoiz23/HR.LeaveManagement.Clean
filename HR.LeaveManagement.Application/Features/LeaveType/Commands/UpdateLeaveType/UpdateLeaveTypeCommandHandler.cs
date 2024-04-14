@@ -4,12 +4,12 @@ using MediatR;
 
 namespace HR.LeaveManagement.Application.Features.LeaveType.Commands.UpdateLeaveType;
 
-public class CreateLeaveTypeCommandHandler : IRequestHandler<UpdateLeaveTypeCommand, Unit>
+public class UpdateLeaveTypeCommandHandler : IRequestHandler<UpdateLeaveTypeCommand, Unit>
 {
     private readonly ILeaveTypeRepository _leaveTypeRepository;
     private readonly IMapper _mapper;
 
-    public CreateLeaveTypeCommandHandler(IMapper mapper, ILeaveTypeRepository leaveTypeRepository)
+    public UpdateLeaveTypeCommandHandler(IMapper mapper, ILeaveTypeRepository leaveTypeRepository)
     {
         _mapper = mapper;
         _leaveTypeRepository = leaveTypeRepository;

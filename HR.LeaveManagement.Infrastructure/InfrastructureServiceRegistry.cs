@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace HR.LeaveManagement.Infrastructure;
 public static class InfrastructureServiceRegistry
 {
-    public static IServiceCollection AddInfrastructureServices(IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
         services.AddTransient<IEmaiSender, EmailSender>();

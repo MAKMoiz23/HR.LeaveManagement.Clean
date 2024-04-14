@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HR.LeaveManagement.Application.Contracts.Logger;
 using HR.LeaveManagement.Application.Contracts.Persistence;
 using MediatR;
 
@@ -8,17 +9,22 @@ public class CreateLeaveTypeCommandHandler : IRequestHandler<CreateLeaveTypeComm
 {
     private readonly ILeaveTypeRepository _leaveTypeRepository;
     private readonly IMapper _mapper;
-    public CreateLeaveTypeCommandHandler(ILeaveTypeRepository leaveTypeRepository, IMapper mapper)
+    //private readonly IAppLogger<CreateLeaveTypeCommandHandler> _logger;
+    public CreateLeaveTypeCommandHandler(ILeaveTypeRepository leaveTypeRepository, IMapper mapper 
+        //,IAppLogger<CreateLeaveTypeCommandHandler> logger
+        )
     {
         _leaveTypeRepository = leaveTypeRepository;
         _mapper = mapper;
+        //_logger = logger;
     }
     public async Task<int> Handle(CreateLeaveTypeCommand request, CancellationToken cancellationToken)
     {
         //Validations
         var validator = new CreateleaveTypeCommandValidator(_leaveTypeRepository);
-        var validationResult = validator.Validate(request);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
+            //_logger.LogWarning("Validation failed for {0}", nameof(LeaveType));
             // need to implement custom exception
             Console.WriteLine("Invalid");
 
@@ -27,6 +33,8 @@ public class CreateLeaveTypeCommandHandler : IRequestHandler<CreateLeaveTypeComm
 
         //Create in DB
         await _leaveTypeRepository.Create(leaveTypeToAdd, cancellationToken);
+
+        //_logger.LogInformation("{0} - {1} created successfully.", nameof(LeaveType), leaveTypeToAdd.Id);
 
         //return
         return leaveTypeToAdd.Id;

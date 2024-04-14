@@ -11,8 +11,13 @@ public class LeaveTypeRepository : GenericRepository<LeaveType>, ILeaveTypeRepos
     {
     }
 
+    //public Task<bool> LeaveTypeMustExists(int id, CancellationToken token)
+    //{
+    //    throw new NotImplementedException();
+    //}
+
     public async Task<bool> ValidateUniqueName(string name, CancellationToken token)
     {
-        return await _context.Set<LeaveType>().AnyAsync(lt => lt.Name == name, token);
+        return !await _context.Set<LeaveType>().AnyAsync(lt => lt.Name == name, token);
     }
 }

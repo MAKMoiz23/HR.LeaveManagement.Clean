@@ -3,3 +3,16 @@
 ################################################################################
 
 /.vs/HR.LeaveManagement.Clean/FileContentIndex/dc14f8e8-cb40-4ba4-b3ae-a34eea504299.vsidx
+/HR.LeaveManagement.Api/obj
+/HR.LeaveManagement.Application/bin/Debug/net7.0
+/HR.LeaveManagement.Application/obj/Debug/net7.0/ref
+/HR.LeaveManagement.Application/obj/Debug/net7.0/refint
+/HR.LeaveManagement.Domain/bin/Debug/net7.0
+/HR.LeaveManagement.Domain/obj/Debug/net7.0/ref
+/HR.LeaveManagement.Domain/obj/Debug/net7.0/refint
+/HR.LeaveManagement.Domain/obj/Debug/net7.0
+/HR.LeaveManagement.Infrastructure/bin/Debug/net7.0
+/HR.LeaveManagement.Infrastructure/obj/Debug/net7.0
+/HR.LeaveManagement.Infrastructure/obj
+/HR.LeaveManagement.Persistence/bin/Debug/net7.0
+/HR.LeaveManagement.Persistence/obj

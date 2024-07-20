@@ -1,13 +1,14 @@
 ﻿using HR.LeaveManagement.Domain;
 
-namespace HR.LeaveManagement.Application.Contracts.Persistence;
-
-public interface ILeaveAllocationRepository : IGenericRepository<LeaveAllocation>
+namespace HR.LeaveManagement.Application.Contracts.Persistence
 {
-    Task<IEnumerable<LeaveAllocation>> GetLeaveAllocationsWithDetails(CancellationToken cancellationToken);
-    Task<IEnumerable<LeaveAllocation>> GetLeaveAllocationsWithDetails(string userId ,CancellationToken cancellationToken);
-    Task<LeaveAllocation?> GetLeaveAllocationsWithDetails(int id, CancellationToken cancellationToken);
-    Task<bool> AllocationExists(string userId, int leaveTypeId, int period, CancellationToken cancellationToken);
-    Task AddAllocations(IEnumerable<LeaveAllocation> allocations, CancellationToken cancellationToken);
-    Task<IEnumerable<LeaveAllocation>> GetUserAllocations(int leaveTypeid, string userId, CancellationToken cancellationToken);
+    public interface ILeaveAllocationRepository : IGenericRepository<LeaveAllocation>
+    {
+        Task<LeaveAllocation> GetLeaveAllocationWithDetails(int id);
+        Task<List<LeaveAllocation>> GetLeaveAllocationsWithDetails();
+        Task<List<LeaveAllocation>> GetLeaveAllocationsWithDetails(string userId);
+        Task<bool> AllocationExists(string userId, int leaveTypeId, int period);
+        Task AddAllocations(List<LeaveAllocation> allocations);
+        Task<LeaveAllocation> GetUserAllocations(string userId, int leaveTypeId);
+    }
 }

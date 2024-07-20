@@ -1,26 +1,34 @@
-﻿using HR.LeaveManagement.Application.Contracts.Persistence;
+﻿using AutoMapper;
+using HR.LeaveManagement.Application.Contracts.Persistence;
+using HR.LeaveManagement.Application.Exceptions;
+using HR.LeaveManagement.Domain;
 using MediatR;
 
-namespace HR.LeaveManagement.Application.Features.LeaveType.Commands.DeleteLeaveType;
-
-public class DeleteLeaveTypeCommandHandler : IRequestHandler<DeleteLeaveTypeCommand, Unit>
+namespace HR.LeaveManagement.Application.Features.LeaveType.Commands.DeleteLeaveType
 {
-    private readonly ILeaveTypeRepository _leaveTypeRepository;
-
-    public DeleteLeaveTypeCommandHandler(ILeaveTypeRepository leaveTypeRepository)
+    public class DeleteLeaveTypeCommandHandler : IRequestHandler<DeleteLeaveTypeCommand, Unit>
     {
-        _leaveTypeRepository = leaveTypeRepository;
-    }
+        private readonly ILeaveTypeRepository _leaveTypeRepository;
 
-    public async Task<Unit> Handle(DeleteLeaveTypeCommand request, CancellationToken cancellationToken)
-    {
-        //Retrieve from DB
-        var leaveTypeToDelete = await _leaveTypeRepository.GetById(request.Id, cancellationToken);
-        //Verify that entity exists...To Do
-        //Delete from DB
-        await _leaveTypeRepository.Delete(leaveTypeToDelete, cancellationToken);
+        public DeleteLeaveTypeCommandHandler(ILeaveTypeRepository leaveTypeRepository)
+        {
+            _leaveTypeRepository = leaveTypeRepository;
+        }
 
-        //return
-        return Unit.Value;
+        public async Task<Unit> Handle(DeleteLeaveTypeCommand request, CancellationToken cancellationToken)
+        {
+            // retrieve domain entity object
+            var leaveTypeToDelete = await _leaveTypeRepository.GetByIdAsync(request.Id);
+
+            // verify that record exists
+            if (leaveTypeToDelete == null)
+                throw new NotFoundException(nameof(LeaveType), request.Id);
+
+            // remove from database
+            await _leaveTypeRepository.DeleteAsync(leaveTypeToDelete);
+
+            // retun record id
+            return Unit.Value;
+        }
     }
 }

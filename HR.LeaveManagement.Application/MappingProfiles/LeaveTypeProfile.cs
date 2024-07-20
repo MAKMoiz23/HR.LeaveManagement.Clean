@@ -5,15 +5,16 @@ using HR.LeaveManagement.Application.Features.LeaveType.Queries.GetAllLeaveTypes
 using HR.LeaveManagement.Application.Features.LeaveType.Queries.GetLeaveTypeDetails;
 using HR.LeaveManagement.Domain;
 
-namespace HR.LeaveManagement.Application.MappingProfiles;
-
-public class LeaveTypeProfile : Profile
+namespace HR.LeaveManagement.Application.MappingProfiles
 {
-    public LeaveTypeProfile()
+    public class LeaveTypeProfile : Profile
     {
-        CreateMap<LeaveTypeDTO, LeaveType>().ReverseMap();
-        CreateMap<LeaveType, LeaveTypeDetailsDTO>();
-        CreateMap<CreateLeaveTypeCommand, LeaveType>();
-        CreateMap<UpdateLeaveTypeCommand, LeaveType>();
+        public LeaveTypeProfile()
+        {
+            CreateMap<LeaveTypeDto, LeaveType>().ReverseMap();
+            CreateMap<LeaveType, LeaveTypeDetailsDto>();
+            CreateMap<CreateLeaveTypeCommand, LeaveType>();
+            CreateMap<UpdateLeaveTypeCommand, LeaveType>();
+        }
     }
 }

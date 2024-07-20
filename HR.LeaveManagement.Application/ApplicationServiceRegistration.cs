@@ -1,16 +1,22 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace HR.LeaveManagement.Application;
-public static class ApplicationServiceRegistration
+namespace HR.LeaveManagement.Application
 {
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    public static class ApplicationServiceRegistration
     {
-        services.AddAutoMapper(Assembly.GetExecutingAssembly());
-        services.AddMediatR(cfg => 
-            cfg.RegisterServicesFromAssembly(
-                Assembly.GetExecutingAssembly()));
+        public static IServiceCollection AddApplicationServices(this  IServiceCollection services)
+        {
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddMediatR(Assembly.GetExecutingAssembly());
 
-        return services;
+            return services;
+        }
     }
 }

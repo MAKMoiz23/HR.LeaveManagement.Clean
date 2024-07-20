@@ -1,43 +1,48 @@
 ﻿using FluentValidation;
 using HR.LeaveManagement.Application.Contracts.Persistence;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace HR.LeaveManagement.Application.Features.LeaveType.Commands.UpdateLeaveType;
+
 public class UpdateLeaveTypeCommandValidator : AbstractValidator<UpdateLeaveTypeCommand>
 {
     private readonly ILeaveTypeRepository _leaveTypeRepository;
+
     public UpdateLeaveTypeCommandValidator(ILeaveTypeRepository leaveTypeRepository)
     {
-        RuleFor(lt => lt.Id)
+        RuleFor(p => p.Id)
             .NotNull()
-            .MustAsync(LeaveTypeMustExists);
-        RuleFor(lt => lt.Name)
-            .NotEmpty()
-                .WithMessage($"Property name Cannot be empty.")
+            .MustAsync(LeaveTypeMustExist);
+
+        RuleFor(p => p.Name)
+            .NotEmpty().WithMessage("{PropertyName} is required")
             .NotNull()
-                .WithMessage($"Property name cannot be null.")
-            .MaximumLength(50)
-                .WithMessage("Property name cannot have more than 50 characters.");
+            .MaximumLength(70).WithMessage("{PropertyName} must be fewer than 70 characters");
 
-        RuleFor(lt => lt.DefaultDays)
-            .LessThanOrEqualTo(20)
-                .WithMessage($"Property default days cannot exceed 20.")
-            .GreaterThanOrEqualTo(1)
-                .WithMessage($"Property default days cannot be smaller than 1.");
+        RuleFor(p => p.DefaultDays)
+            .LessThan(100).WithMessage("{PropertyName} cannot exceed 100")
+            .GreaterThan(1).WithMessage("{PropertyName} cannot be less than 1");
 
-        RuleFor(lt => lt)
-            .MustAsync(UniqueNameCheck)
-                .WithMessage($"Name already exists.");
-        _leaveTypeRepository = leaveTypeRepository;
+        RuleFor(q => q)
+            .MustAsync(LeaveTypeNameUnique)
+            .WithMessage("Leave type already exists");
+
+
+        this._leaveTypeRepository = leaveTypeRepository;
     }
 
-    private async Task<bool> LeaveTypeMustExists(int id, CancellationToken token)
+    private async Task<bool> LeaveTypeMustExist(int id, CancellationToken arg2)
     {
-        var leaveType = await _leaveTypeRepository.GetById(id, token);
+        var leaveType = await _leaveTypeRepository.GetByIdAsync(id);
         return leaveType != null;
     }
 
-    private Task<bool> UniqueNameCheck(UpdateLeaveTypeCommand command, CancellationToken token)
+    private async Task<bool> LeaveTypeNameUnique(UpdateLeaveTypeCommand command, CancellationToken token)
     {
-        return _leaveTypeRepository.ValidateUniqueName(command.Name, token);
+        return await _leaveTypeRepository.IsLeaveTypeUnique(command.Name);
     }
 }

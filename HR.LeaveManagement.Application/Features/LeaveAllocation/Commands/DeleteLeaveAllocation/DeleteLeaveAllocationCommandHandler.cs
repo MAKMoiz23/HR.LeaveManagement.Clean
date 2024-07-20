@@ -1,23 +1,31 @@
-﻿using HR.LeaveManagement.Application.Contracts.Persistence;
+﻿using AutoMapper;
+using HR.LeaveManagement.Application.Contracts.Persistence;
+using HR.LeaveManagement.Application.Exceptions;
+using HR.LeaveManagement.Application.Features.LeaveAllocations.Requests.Commands;
 using MediatR;
 
-namespace HR.LeaveManagement.Application.Features.LeaveAllocation.Commands.DeleteLeaveAllocation;
-public class DeleteLeaveAllocationCommandHandler : IRequestHandler<DeleteLeaveAllocationCommand, Unit>
+namespace HR.LeaveManagement.Application.Features.LeaveAllocations.Handlers.Commands
 {
-    private readonly ILeaveAllocationRepository _leaveAllocationRepository;
-
-    public DeleteLeaveAllocationCommandHandler(ILeaveAllocationRepository leaveAllocationRepository)
+    public class DeleteLeaveAllocationCommandHandler : IRequestHandler<DeleteLeaveAllocationCommand>
     {
-        _leaveAllocationRepository = leaveAllocationRepository;
-    }
+        private readonly ILeaveAllocationRepository _leaveAllocationRepository;
+        private readonly IMapper _mapper;
 
-    public async Task<Unit> Handle(DeleteLeaveAllocationCommand request, CancellationToken cancellationToken)
-    {
-        var leaveAllocation = await _leaveAllocationRepository.GetById(request.Id, cancellationToken);
-        // verify if exists to Do
+        public DeleteLeaveAllocationCommandHandler(ILeaveAllocationRepository leaveAllocationRepository, IMapper mapper)
+        {
+            this._leaveAllocationRepository = leaveAllocationRepository;
+            _mapper = mapper;
+        }
 
-        await _leaveAllocationRepository.Delete(leaveAllocation, cancellationToken);
+        public async Task<Unit> Handle(DeleteLeaveAllocationCommand request, CancellationToken cancellationToken)
+        {
+            var leaveAllocation = await _leaveAllocationRepository.GetByIdAsync(request.Id);
 
-        return Unit.Value;
+            if (leaveAllocation == null)
+                throw new NotFoundException(nameof(LeaveAllocation), request.Id);
+
+            await _leaveAllocationRepository.DeleteAsync(leaveAllocation);
+            return Unit.Value;
+        }
     }
 }

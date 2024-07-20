@@ -1,37 +1,45 @@
 ﻿using AutoMapper;
 using HR.LeaveManagement.Application.Contracts.Persistence;
+using HR.LeaveManagement.Application.DTOs.LeaveAllocation.Validators;
+using HR.LeaveManagement.Application.Exceptions;
+using HR.LeaveManagement.Application.Features.LeaveAllocations.Requests.Commands;
 using MediatR;
 
-namespace HR.LeaveManagement.Application.Features.LeaveAllocation.Commands.UpdateLeaveAllocation;
-public class UpdateLeaveAllocationCommandHandler : IRequestHandler<UpdateLeaveAllocationCommand, Unit>
+namespace HR.LeaveManagement.Application.Features.LeaveAllocations.Handlers.Commands
 {
-    private readonly ILeaveAllocationRepository _leaveAllocationRepository;
-    private readonly IMapper _mapper;
-
-    public UpdateLeaveAllocationCommandHandler(IMapper mapper, ILeaveAllocationRepository leaveAllocationRepository)
+    public class UpdateLeaveAllocationCommandHandler : IRequestHandler<UpdateLeaveAllocationCommand, Unit>
     {
-        _mapper = mapper;
-        _leaveAllocationRepository = leaveAllocationRepository;
-    }
+        private readonly IMapper _mapper;
+        private readonly ILeaveTypeRepository _leaveTypeRepository;
+        private readonly ILeaveAllocationRepository _leaveAllocationRepository;
 
-    public async Task<Unit> Handle(UpdateLeaveAllocationCommand request, CancellationToken cancellationToken)
-    {
-        //validations
-        var validator = new UpdateLeaveAllocationValidator(_leaveAllocationRepository);
-
-        var validationResults = await validator.ValidateAsync(request);
-
-        if (!validationResults.IsValid) 
+        public UpdateLeaveAllocationCommandHandler(
+            IMapper mapper,
+            ILeaveTypeRepository leaveTypeRepository,
+            ILeaveAllocationRepository leaveAllocationRepository)
         {
-            //do some thing custome ex etc...
-            Console.WriteLine("Invalid");
+            _mapper = mapper;
+            this._leaveTypeRepository = leaveTypeRepository;
+            this._leaveAllocationRepository = leaveAllocationRepository;
         }
 
-        //conversions from dto
-        var data = _mapper.Map<Domain.LeaveAllocation>(request);
-        //update in db
-        await _leaveAllocationRepository.Update(data, cancellationToken);
+        public async Task<Unit> Handle(UpdateLeaveAllocationCommand request, CancellationToken cancellationToken)
+        {
+            var validator = new UpdateLeaveAllocationCommandValidator(_leaveTypeRepository, _leaveAllocationRepository);
+            var validationResult = await validator.ValidateAsync(request);
 
-        return Unit.Value;
+            if (validationResult.Errors.Any())
+                throw new BadRequestException("Invalid Leave Allocation", validationResult);
+
+            var leaveAllocation = await _leaveAllocationRepository.GetByIdAsync(request.Id);
+
+            if (leaveAllocation is null)
+                throw new NotFoundException(nameof(LeaveAllocation), request.Id);
+
+            _mapper.Map(request, leaveAllocation);
+
+            await _leaveAllocationRepository.UpdateAsync(leaveAllocation);
+            return Unit.Value;
+        }
     }
 }

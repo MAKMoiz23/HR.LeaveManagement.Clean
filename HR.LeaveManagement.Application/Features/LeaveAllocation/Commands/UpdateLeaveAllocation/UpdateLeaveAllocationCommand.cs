@@ -1,11 +1,11 @@
 ﻿using MediatR;
 
-namespace HR.LeaveManagement.Application.Features.LeaveAllocation.Commands.UpdateLeaveAllocation;
-public record UpdateLeaveAllocationCommand : IRequest<Unit>
+namespace HR.LeaveManagement.Application.Features.LeaveAllocations.Requests.Commands;
+
+public class UpdateLeaveAllocationCommand : IRequest<Unit>
 {
     public int Id { get; set; }
     public int NumberOfDays { get; set; }
-    public int Period { get; set; }
     public int LeaveTypeId { get; set; }
-    public string EmployeeId { get; set; } = string.Empty;
+    public int Period { get; set; }
 }

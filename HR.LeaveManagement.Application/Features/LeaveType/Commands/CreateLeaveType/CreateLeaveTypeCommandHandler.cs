@@ -1,42 +1,39 @@
 ﻿using AutoMapper;
-using HR.LeaveManagement.Application.Contracts.Logger;
 using HR.LeaveManagement.Application.Contracts.Persistence;
+using HR.LeaveManagement.Application.Exceptions;
+using HR.LeaveManagement.Domain;
 using MediatR;
 
-namespace HR.LeaveManagement.Application.Features.LeaveType.Commands.CreateLeaveType;
-
-public class CreateLeaveTypeCommandHandler : IRequestHandler<CreateLeaveTypeCommand, int>
+namespace HR.LeaveManagement.Application.Features.LeaveType.Commands.CreateLeaveType
 {
-    private readonly ILeaveTypeRepository _leaveTypeRepository;
-    private readonly IMapper _mapper;
-    //private readonly IAppLogger<CreateLeaveTypeCommandHandler> _logger;
-    public CreateLeaveTypeCommandHandler(ILeaveTypeRepository leaveTypeRepository, IMapper mapper 
-        //,IAppLogger<CreateLeaveTypeCommandHandler> logger
-        )
+    public class CreateLeaveTypeCommandHandler : IRequestHandler<CreateLeaveTypeCommand, int>
     {
-        _leaveTypeRepository = leaveTypeRepository;
-        _mapper = mapper;
-        //_logger = logger;
-    }
-    public async Task<int> Handle(CreateLeaveTypeCommand request, CancellationToken cancellationToken)
-    {
-        //Validations
-        var validator = new CreateleaveTypeCommandValidator(_leaveTypeRepository);
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-        if (!validationResult.IsValid)
-            //_logger.LogWarning("Validation failed for {0}", nameof(LeaveType));
-            // need to implement custom exception
-            Console.WriteLine("Invalid");
+        private readonly IMapper _mapper;
+        private readonly ILeaveTypeRepository _leaveTypeRepository;
 
-        //Conversions
-        var leaveTypeToAdd = _mapper.Map<Domain.LeaveType>(request);
+        public CreateLeaveTypeCommandHandler(IMapper mapper, ILeaveTypeRepository leaveTypeRepository)
+        {
+            _mapper = mapper;
+            _leaveTypeRepository = leaveTypeRepository;
+        }
 
-        //Create in DB
-        await _leaveTypeRepository.Create(leaveTypeToAdd, cancellationToken);
+        public async Task<int> Handle(CreateLeaveTypeCommand request, CancellationToken cancellationToken)
+        {
+            // Validate incoming data
+            var validator = new CreateLeaveTypeCommandValidator(_leaveTypeRepository);
+            var validationResult = await validator.ValidateAsync(request);
 
-        //_logger.LogInformation("{0} - {1} created successfully.", nameof(LeaveType), leaveTypeToAdd.Id);
+            if (validationResult.Errors.Any())
+                throw new BadRequestException("Invalid Leave type", validationResult);
 
-        //return
-        return leaveTypeToAdd.Id;
+            // convert to domain entity object
+            var leaveTypeToCreate = _mapper.Map<Domain.LeaveType>(request);
+
+            // add to database
+            await _leaveTypeRepository.CreateAsync(leaveTypeToCreate);
+
+            // retun record id
+            return leaveTypeToCreate.Id;
+        }
     }
 }

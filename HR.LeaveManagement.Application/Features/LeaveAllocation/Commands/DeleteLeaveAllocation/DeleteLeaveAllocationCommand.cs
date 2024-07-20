@@ -1,4 +1,12 @@
 ﻿using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace HR.LeaveManagement.Application.Features.LeaveAllocation.Commands.DeleteLeaveAllocation;
-public record DeleteLeaveAllocationCommand(int Id) : IRequest<Unit>;
+namespace HR.LeaveManagement.Application.Features.LeaveAllocations.Requests.Commands
+{
+    public class DeleteLeaveAllocationCommand : IRequest
+    {
+        public int Id { get; set; }
+    }
+}

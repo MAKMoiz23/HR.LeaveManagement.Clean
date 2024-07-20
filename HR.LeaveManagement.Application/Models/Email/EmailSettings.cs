@@ -1,8 +1,9 @@
-﻿namespace HR.LeaveManagement.Application.Models.Email;
-
-public class EmailSettings
+﻿namespace HR.LeaveManagement.Application.Models.Email
 {
-    public string ApiKey { get; set; }
-    public string FromAddress { get; set; }
-    public string FromName { get; set; }
+    public class EmailSettings
+    {
+        public string ApiKey { get; set; }
+        public string FromAddress { get; set; }
+        public string FromName { get; set; }
+    }
 }

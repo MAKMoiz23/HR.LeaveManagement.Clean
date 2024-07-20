@@ -1,48 +1,49 @@
 ﻿using HR.LeaveManagement.Application.Contracts.Persistence;
-using HR.LeaveManagement.Domain.Common;
-using HR.LeaveManagement.Persistence.DatabaseContexts;
+using HR.LeaveManagement.Persistence.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace HR.LeaveManagement.Persistence.Repositories;
-public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
+namespace HR.LeaveManagement.Persistence.Repositories
 {
-    public readonly HRDatabaseContext _context;
-
-    public GenericRepository(HRDatabaseContext context)
+    public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        _context = context;
-    }
+        protected readonly HrDatabaseContext _context;
 
-    public async Task Create(T entity, CancellationToken cancellationToken)
-    {
-        await _context.AddAsync(entity, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
-    }
+        public GenericRepository(HrDatabaseContext context)
+        {
+            this._context = context;
+        }
 
-    public async Task Delete(T entity, CancellationToken cancellationToken)
-    {
-        _context.Remove(entity);
-        await _context.SaveChangesAsync(cancellationToken);
-    }
+        public async Task CreateAsync(T entity)
+        {
+            await _context.AddAsync(entity);
+            await _context.SaveChangesAsync();
+        }
 
-    public async Task<IEnumerable<T>> GetAll(CancellationToken cancellationToken)
-    {
-        return await _context.Set<T>()
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
-    }
+        public async Task DeleteAsync(T entity)
+        {
+            _context.Remove(entity);
+            await _context.SaveChangesAsync();
+        }
 
-    public async Task<T?> GetById(int id, CancellationToken cancellationToken)
-    {
-        return await _context.Set<T>()
-            .AsNoTracking()
-            .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
-    }
+        public async Task<IReadOnlyList<T>> GetAsync()
+        {
+            return await _context.Set<T>().ToListAsync();
+        }
 
-    public async Task Update(T entity, CancellationToken cancellationToken)
-    {
-        //_context.Update(entity);
-        _context.Entry(entity).State = EntityState.Modified;
-        await _context.SaveChangesAsync(cancellationToken);
+        public async Task<T> GetByIdAsync(int id)
+        {
+            return await _context.Set<T>().FindAsync(id);
+        }
+
+        public async Task UpdateAsync(T entity)
+        {
+            _context.Entry(entity).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
     }
 }

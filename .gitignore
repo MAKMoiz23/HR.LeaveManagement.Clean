@@ -16,3 +16,5 @@
 /HR.LeaveManagement.Infrastructure/obj
 /HR.LeaveManagement.Persistence/bin/Debug/net7.0
 /HR.LeaveManagement.Persistence/obj
+/HR.LeavManagement.Application.UnitTests/bin/Debug/net7.0
+/HR.LeavManagement.Application.UnitTests/obj/Debug/net7.0
